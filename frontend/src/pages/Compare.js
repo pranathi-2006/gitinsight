@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
-import Navbar from "../components/Navbar";
-
 function Compare() {
 
   const [repo1, setRepo1] = useState("");
