@@ -12,7 +12,7 @@ useEffect(() => {
 
 
 axios
-  .get(`https://gitinsight-ewxj.onrender.com/repo?repo=${repo}`)
+  .get(`https://gitinsight-ewxj.onrender.com/contributors?repo=${repo}`)
   .then((res) => setContributors(res.data?.contributors || []))
   .catch((err) => console.error(err));
 
