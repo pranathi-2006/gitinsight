@@ -10,9 +10,7 @@ function UserAnalyzer() {
 
   const handleSearch = async () => {
 
-    const res = await axios.get(
-      `http://localhost:5000/user?username=${username}`
-    );
+    const res = await axios.get(`https://gitinsight-ewxj.onrender.com/repo?repo=${repo}`);
 
     setData(res.data);
   };

@@ -30,7 +30,7 @@ function Charts() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/repo?repo=${repo}`)
+      .get(`https://gitinsight-ewxj.onrender.com/repo?repo=${repo}`)
       .then((res) => setData(res.data));
   }, [repo]);
 

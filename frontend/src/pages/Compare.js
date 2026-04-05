@@ -10,8 +10,8 @@ function Compare() {
 
   const handleCompare = async () => {
 
-    const res1 = await axios.get(`http://localhost:5000/repo?repo=${repo1}`);
-    const res2 = await axios.get(`http://localhost:5000/repo?repo=${repo2}`);
+    const res1 = await axios.get(`https://gitinsight-ewxj.onrender.com/repo?repo=${repo1}`);
+    const res2 = await axios.get(`https://gitinsight-ewxj.onrender.com/repo?repo=${repo2}`);
 
     setData1(res1.data);
     setData2(res2.data);

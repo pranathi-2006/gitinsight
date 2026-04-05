@@ -11,7 +11,7 @@ function Contributors() {
   useEffect(() => {
 
     axios
-      .get(`http://localhost:5000/contributors?repo=${repo}`)
+      .get(`https://gitinsight-ewxj.onrender.com/repo?repo=${repo}`)
       .then((res) => setContributors(res.data));
 
   }, [repo]);
