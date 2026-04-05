@@ -12,7 +12,7 @@ app.get("/", (req, res) => {
 res.send("Backend is running 🚀");
 });
 
-// ✅ USER API
+// ✅ USER API (FIXED)
 app.get("/user", async (req, res) => {
 const username = req.query.username;
 
@@ -29,28 +29,30 @@ headers: { "User-Agent": "request" },
 );
 
 ```
-res.json({
+const userData = {
   name: response.data.name,
   avatar: response.data.avatar_url,
   repos: response.data.public_repos,
   followers: response.data.followers,
   following: response.data.following,
   bio: response.data.bio,
-});
+};
+
+res.json(userData);
 ```
 
 } catch (error) {
 console.log("User API error:", error.message);
-res.status(500).json({ error: "Failed to fetch user data" });
+res.json({ error: "Could not fetch user data" });
 }
 });
 
-// ✅ REPO API
+// ✅ REPO API (OK)
 app.get("/repo", async (req, res) => {
 const repo = req.query.repo;
 
 if (!repo) {
-return res.status(400).json({ error: "Repository required" });
+return res.status(400).json({ error: "Repository name required" });
 }
 
 try {
@@ -62,7 +64,7 @@ headers: { "User-Agent": "request" },
 );
 
 ```
-res.json({
+const repoData = {
   name: response.data.name,
   stars: response.data.stargazers_count,
   forks: response.data.forks_count,
@@ -71,37 +73,36 @@ res.json({
   size: response.data.size,
   description: response.data.description,
   avatar: response.data.owner.avatar_url,
-});
+};
+
+res.json(repoData);
 ```
 
 } catch (error) {
 console.log("Repo API error:", error.message);
-res.status(500).json({ error: "Failed to fetch repo data" });
+res.json({ error: "Could not fetch repository data" });
 }
 });
 
-// ✅ CONTRIBUTORS API (FINAL FIXED)
+// ✅ CONTRIBUTORS API (FIXED)
 app.get("/contributors", async (req, res) => {
 const repo = req.query.repo;
 
 if (!repo) {
-return res.status(400).json({ error: "Repository required" });
+return res.status(400).json({ error: "Repository name required" });
 }
 
 try {
-const response = await axios.get(
+const contributorsRes = await axios.get(
 `https://api.github.com/repos/${repo}/contributors`,
 {
-headers: {
-"User-Agent": "request",
-"Accept": "application/vnd.github+json",
-},
+headers: { "User-Agent": "request" },
 }
 );
 
 ```
-const contributors = Array.isArray(response.data)
-  ? response.data.slice(0, 5).map((c) => ({
+const contributors = Array.isArray(contributorsRes.data)
+  ? contributorsRes.data.slice(0, 5).map((c) => ({
       username: c.login,
       contributions: c.contributions,
     }))
@@ -111,8 +112,8 @@ res.json({ contributors });
 ```
 
 } catch (error) {
-console.log("Contributors API error:", error.response?.data || error.message);
-res.json({ contributors: [] }); // never crash
+console.log("Contributors API error:", error.message);
+res.json({ contributors: [] }); // safe fallback
 }
 });
 
