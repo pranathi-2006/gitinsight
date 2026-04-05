@@ -5,63 +5,76 @@ import Navbar from "../components/Navbar";
 
 function Contributors() {
 
-  const [contributors, setContributors] = useState([]);
-  const repo = localStorage.getItem("repo");
+const [contributors, setContributors] = useState([]);
+const repo = localStorage.getItem("repo");
 
-  useEffect(() => {
+useEffect(() => {
 
-    axios
-      .get(`https://gitinsight-ewxj.onrender.com/repo?repo=${repo}`)
-      .then((res) => setContributors(res.data));
 
-  }, [repo]);
+axios
+  .get(`https://gitinsight-ewxj.onrender.com/repo?repo=${repo}`)
+  .then((res) => setContributors(res.data?.contributors || []))
+  .catch((err) => console.error(err));
 
-  return (
 
-    <div className="flex bg-gradient-to-br from-slate-100 to-gray-200 min-h-screen">
+}, [repo]);
 
-      <Sidebar />
+return (
 
-      <div className="ml-[220px] w-full">
 
-        <Navbar />
+<div className="flex bg-gradient-to-br from-slate-100 to-gray-200 min-h-screen">
 
-        <div className="p-10">
+  <Sidebar />
 
-          <h1 className="text-3xl font-bold mb-8">
-            Top Contributors 👨‍💻
-          </h1>
+  <div className="ml-[220px] w-full">
 
-          <div className="grid grid-cols-2 gap-6">
+    <Navbar />
 
-            {contributors.map((c, index) => (
+    <div className="p-10">
 
-              <div
-                key={index}
-                className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition"
-              >
+      <h1 className="text-3xl font-bold mb-8">
+        Top Contributors 👨‍💻
+      </h1>
 
-                <h3 className="text-lg font-semibold">
-                  {c.username}
-                </h3>
+      <div className="grid grid-cols-2 gap-6">
 
-                <p className="text-gray-500">
-                  {c.contributions} contributions
-                </p>
+        {Array.isArray(contributors) && contributors.length > 0 ? (
 
-              </div>
+          contributors.map((c, index) => (
 
-            ))}
+            <div
+              key={index}
+              className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition"
+            >
 
-          </div>
+              <h3 className="text-lg font-semibold">
+                {c.username}
+              </h3>
 
-        </div>
+              <p className="text-gray-500">
+                {c.contributions} contributions
+              </p>
+
+            </div>
+
+          ))
+
+        ) : (
+
+          <p className="text-gray-500">No contributors found</p>
+
+        )}
 
       </div>
 
     </div>
 
-  );
+  </div>
+
+</div>
+
+
+);
 }
 
 export default Contributors;
