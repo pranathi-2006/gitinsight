@@ -3,6 +3,7 @@ import axios from "axios";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import { Bar } from "react-chartjs-2";
+import { useLocation } from "react-router-dom";
 
 import {
   Chart as ChartJS,
@@ -26,36 +27,76 @@ ChartJS.register(
 function Charts() {
 
   const [data, setData] = useState(null);
-  const repo = localStorage.getItem("repo");
+  const [loading, setLoading] = useState(true);
+
+  const location = useLocation();
+  const repo = location.state?.repo || localStorage.getItem("repo");
+
+  // ✅ AUTO URL SWITCH
+  const BASE_URL =
+    window.location.hostname === "localhost"
+      ? "http://localhost:5000"
+      : "https://gitinsight-ewxj.onrender.com";
 
   useEffect(() => {
-    axios
-      .get(`https://gitinsight-ewxj.onrender.com/repo?repo=${repo}`)
-      .then((res) => setData(res.data));
-  }, [repo]);
 
-  if (!data) return <h2 className="text-centre mt-10 text-xl">Loading...</h2>;
+    // ❌ if repo missing
+    if (!repo) {
+      console.log("No repo found ❌");
+      setLoading(false);
+      return;
+    }
+
+    axios
+      .get(`${BASE_URL}/repo?repo=${repo}`)
+      .then((res) => {
+        console.log("Charts data:", res.data);
+        setData(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log("Charts error:", err.message);
+        setData(null);
+        setLoading(false);
+      });
+
+  }, [repo, BASE_URL]);
+
+  // ✅ Loading state
+  if (loading) {
+    return <h2 className="text-center mt-10 text-xl">Loading...</h2>;
+  }
+
+  // ❌ No repo
+  if (!repo) {
+    return <h2 className="text-center mt-10 text-xl">No repo selected ❌</h2>;
+  }
+
+  // ❌ No data
+  if (!data) {
+    return <h2 className="text-center mt-10 text-xl">No data found ❌</h2>;
+  }
 
   const chartData = {
-  labels: [""],
-  datasets: [
-    {
-      label: "Stars ⭐",
-      data: [data.stars],
-      backgroundColor: "#3b82f6",
-    },
-    {
-      label: "Forks 🔀",
-      data: [data.forks],
-      backgroundColor: "#22c55e",
-    },
-    {
-      label: "Issues 🐞",
-      data: [data.issues],
-      backgroundColor: "#ef4444",
-    }
-  ]
-};
+    labels: ["Stats"],
+    datasets: [
+      {
+        label: "Stars ⭐",
+        data: [data.stars ?? 0],
+        backgroundColor: "#3b82f6",
+      },
+      {
+        label: "Forks 🔀",
+        data: [data.forks ?? 0],
+        backgroundColor: "#22c55e",
+      },
+      {
+        label: "Issues 🐞",
+        data: [data.issues ?? 0],
+        backgroundColor: "#ef4444",
+      }
+    ]
+  };
 
   const options = {
     responsive: true,
@@ -68,18 +109,15 @@ function Charts() {
       x: {
         grid: {
           display: false,
-          
         },
       },
       y: {
         beginAtZero: true,
-         
       },
     },
   };
 
   return (
-
     <div className="flex bg-gradient-to-br from-slate-100 to-gray-200 min-h-screen">
 
       <Sidebar />
@@ -94,7 +132,7 @@ function Charts() {
             Repository Analytics 📊
           </h1>
 
-          <div className="bg-white p-8 rounded-2xl shadow-xl w-[800px] mx-auto hover:shadow-2xl transition">
+          <div className="bg-white p-8 rounded-2xl shadow-xl w-[800px] mx-auto">
 
             <h2 className="text-xl font-semibold text-gray-600 mb-6 text-center">
               Repository Statistics
@@ -109,7 +147,6 @@ function Charts() {
       </div>
 
     </div>
-
   );
 }
 
