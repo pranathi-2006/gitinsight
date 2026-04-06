@@ -3,97 +3,124 @@ import axios from "axios";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import { useLocation } from "react-router-dom";
+
 function Dashboard() {
 
-  const [data, setData] = useState(null);
+const [data, setData] = useState(null);
+const [loading, setLoading] = useState(true);
 
-  const location = useLocation();
+const location = useLocation();
 const repo = location.state?.repo || localStorage.getItem("repo");
 
-  useEffect(() => {
-    axios
-      .get(`https://gitinsight-ewxj.onrender.com/repo?repo=${repo}`)
-      .then((res) => setData(res.data));
-  }, [repo]);
+useEffect(() => {
 
-  if (!data) return <h2 className="text-center mt-10 text-xl">Loading...</h2>;
+if (!repo) {
+  console.log("❌ No repo found");
+  setLoading(false);
+  return;
+}
 
-  return (
+console.log("Fetching repo:", repo);
 
-    <div className="flex min-h-screen bg-gradient-to-br from-slate-100 to-gray-200">
+axios
+  .get(`https://gitinsight-ewxj.onrender.com/repo?repo=${repo}`)
+  .then((res) => {
+    console.log("API DATA:", res.data);
 
-      <Sidebar />
+    if (res.data && !res.data.error) {
+      setData(res.data);
+    } else {
+      setData(null);
+    }
 
-      <div className="ml-[220px] w-full">
+    setLoading(false);
+  })
+  .catch((err) => {
+    console.log("API ERROR:", err.message);
+    setData(null);
+    setLoading(false);
+  });
 
-        <Navbar />
 
-        <div className="p-10">
+}, [repo]);
 
-          <h1 className="text-3xl font-bold mb-8 text-gray-800">
-            Repository Dashboard
-          </h1>
+if (loading) {
+return <h2 className="text-center mt-10 text-xl">Loading...</h2>;
+}
 
-          <div className="grid grid-cols-3 gap-6">
-          
-            {/* Repository Card */}
-            <div className="bg-white p-6 rounded-xl shadow hover:shadow-2xl hover:-translate-y-1 transition transform duration-200">
+if (!data) {
+return <h2 className="text-center mt-10 text-xl">No data found ❌</h2>;
+}
 
-              <h3 className="text-gray-500">Repository</h3>
-              <p className="text-xl font-bold mt-2">
-                {data.name}
-              </p>
-            </div>
+return ( <div className="flex min-h-screen bg-gradient-to-br from-slate-100 to-gray-200">
 
-            {/* Stars Card */}
-            <div className="bg-white p-6 rounded-xl shadow hover:shadow-2xl hover:-translate-y-1 transition transform duration-200">
-              <h3 className="text-gray-500">Stars ⭐</h3>
-              <p className="text-xl font-bold text-blue-600 mt-2">
-                {data.stars}
-              </p>
-            </div>
 
-            {/* Forks Card */}
-            <div className="bg-white p-6 rounded-xl shadow hover:shadow-2xl hover:-translate-y-1 transition transform duration-200">
-              <h3 className="text-gray-500">Forks 🔀</h3>
-              <p className="text-xl font-bold text-green-600 mt-2">
-                {data.forks}
-              </p>
-            </div>
+  <Sidebar />
 
-            {/* Language Card */}
-            <div className="bg-white p-6 rounded-xl shadow hover:shadow-2xl hover:-translate-y-1 transition transform duration-200">
-              <h3 className="text-gray-500">Language 💻</h3>
-              <p className="text-xl font-bold text-purple-600 mt-2">
-                {data.language}
-              </p>
-            </div>
+  <div className="ml-[220px] w-full">
 
-            {/* Issues Card */}
-            <div className="bg-white p-6 rounded-xl shadow hover:shadow-2xl hover:-translate-y-1 transition transform duration-200">
-              <h3 className="text-gray-500">Open Issues 🐞</h3>
-              <p className="text-xl font-bold text-orange-600 mt-2">
-                {data.issues}
-              </p>
-            </div>
+    <Navbar />
 
-            {/* Size Card */}
-            <div className="bg-white p-6 rounded-xl shadow hover:shadow-2xl hover:-translate-y-1 transition transform duration-200">
-              <h3 className="text-gray-500">Repository Size 📦</h3>
-              <p className="text-xl font-bold text-red-600 mt-2">
-                {data.size} KB
-              </p>
-            </div>
+    <div className="p-10">
 
-          </div>
+      <h1 className="text-3xl font-bold mb-8 text-gray-800">
+        Repository Dashboard
+      </h1>
 
+      <div className="grid grid-cols-3 gap-6">
+
+        <div className="bg-white p-6 rounded-xl shadow">
+          <h3 className="text-gray-500">Repository</h3>
+          <p className="text-xl font-bold mt-2">
+            {data.name || "N/A"}
+          </p>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow">
+          <h3 className="text-gray-500">Stars ⭐</h3>
+          <p className="text-xl font-bold text-blue-600 mt-2">
+            {data.stars ?? 0}
+          </p>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow">
+          <h3 className="text-gray-500">Forks 🔀</h3>
+          <p className="text-xl font-bold text-green-600 mt-2">
+            {data.forks ?? 0}
+          </p>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow">
+          <h3 className="text-gray-500">Language 💻</h3>
+          <p className="text-xl font-bold text-purple-600 mt-2">
+            {data.language || "N/A"}
+          </p>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow">
+          <h3 className="text-gray-500">Open Issues 🐞</h3>
+          <p className="text-xl font-bold text-orange-600 mt-2">
+            {data.issues ?? 0}
+          </p>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow">
+          <h3 className="text-gray-500">Repository Size 📦</h3>
+          <p className="text-xl font-bold text-red-600 mt-2">
+            {data.size ?? 0} KB
+          </p>
         </div>
 
       </div>
 
     </div>
 
-  );
+  </div>
+
+</div>
+
+
+);
 }
 
 export default Dashboard;
