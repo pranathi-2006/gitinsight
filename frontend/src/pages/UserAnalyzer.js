@@ -7,8 +7,8 @@ function UserAnalyzer() {
 
   const [username, setUsername] = useState("");
   const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  // ✅ AUTO BASE URL
   const BASE_URL =
     window.location.hostname === "localhost"
       ? "http://localhost:5000"
@@ -22,6 +22,8 @@ function UserAnalyzer() {
     }
 
     try {
+      setLoading(true);
+
       const res = await axios.get(
         `${BASE_URL}/user?username=${username}`
       );
@@ -33,6 +35,8 @@ function UserAnalyzer() {
     } catch (error) {
       console.error("User API error:", error);
       setData(null);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -71,12 +75,19 @@ function UserAnalyzer() {
 
           </div>
 
-          {data ? (
+          {/* ✅ Loading */}
+          {loading && (
+            <p className="text-gray-500">Loading...</p>
+          )}
+
+          {/* ✅ Data */}
+          {data && data.name !== "User not found" && (
 
             <div className="bg-white p-6 rounded-xl shadow flex gap-6 items-center">
 
+              {/* ✅ Fix avatar */}
               <img
-                src={data.avatar}
+                src={data.avatar || "https://via.placeholder.com/80"}
                 alt="avatar"
                 className="w-20 h-20 rounded-full"
               />
@@ -88,14 +99,14 @@ function UserAnalyzer() {
                 </h2>
 
                 <p className="text-gray-500">
-                  {data.bio}
+                  {data.bio || "No bio available"}
                 </p>
 
                 <div className="flex gap-6 mt-3">
 
-                  <p>📦 Repos: {data.repos}</p>
-                  <p>👥 Followers: {data.followers}</p>
-                  <p>➡ Following: {data.following}</p>
+                  <p>📦 Repos: {data.repos ?? 0}</p>
+                  <p>👥 Followers: {data.followers ?? 0}</p>
+                  <p>➡ Following: {data.following ?? 0}</p>
 
                 </div>
 
@@ -103,10 +114,13 @@ function UserAnalyzer() {
 
             </div>
 
-          ) : (
+          )}
 
-            <p className="text-gray-500"></p>
-
+          {/* ❌ Error */}
+          {data && data.name === "User not found" && (
+            <p className="text-red-500 font-semibold">
+              User not found ❌
+            </p>
           )}
 
         </div>
