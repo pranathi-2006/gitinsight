@@ -11,11 +11,7 @@ function Dashboard() {
   const location = useLocation();
   const repo = location.state?.repo || localStorage.getItem("repo");
 
-  // ✅ AUTO SWITCH (LOCAL + DEPLOYED)
-  const BASE_URL =
-    window.location.hostname === "localhost"
-      ? "http://localhost:5000"
-      : "https://gitinsight-ewxj.onrender.com";
+  const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
   useEffect(() => {
     if (!repo) {
@@ -30,8 +26,6 @@ function Dashboard() {
       .get(`${BASE_URL}/repo?repo=${repo}`)
       .then((res) => {
         console.log("API DATA:", res.data);
-
-        // ✅ ALWAYS SET DATA (no strict error check)
         setData(res.data);
         setLoading(false);
       })

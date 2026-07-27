@@ -32,14 +32,9 @@ function Charts() {
   const location = useLocation();
   const repo = location.state?.repo || localStorage.getItem("repo");
 
-  // ✅ AUTO URL SWITCH
-  const BASE_URL =
-    window.location.hostname === "localhost"
-      ? "http://localhost:5000"
-      : "https://gitinsight-ewxj.onrender.com";
+  const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
   useEffect(() => {
-
     // ❌ if repo missing
     if (!repo) {
       console.log("No repo found ❌");
@@ -59,7 +54,6 @@ function Charts() {
         setData(null);
         setLoading(false);
       });
-
   }, [repo, BASE_URL]);
 
   // ✅ Loading state

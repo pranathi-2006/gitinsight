@@ -8,14 +8,18 @@ function Compare() {
   const [data1, setData1] = useState(null);
   const [data2, setData2] = useState(null);
 
+  const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
   const handleCompare = async () => {
+    try {
+      const res1 = await axios.get(`${BASE_URL}/repo?repo=${repo1}`);
+      const res2 = await axios.get(`${BASE_URL}/repo?repo=${repo2}`);
 
-    const res1 = await axios.get(`https://gitinsight-ewxj.onrender.com/repo?repo=${repo1}`);
-    const res2 = await axios.get(`https://gitinsight-ewxj.onrender.com/repo?repo=${repo2}`);
-
-    setData1(res1.data);
-    setData2(res2.data);
-
+      setData1(res1.data);
+      setData2(res2.data);
+    } catch (err) {
+      console.log("Comparison API error:", err.message);
+    }
   };
 
   return (

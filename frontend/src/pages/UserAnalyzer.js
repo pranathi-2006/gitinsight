@@ -9,13 +9,9 @@ function UserAnalyzer() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const BASE_URL =
-    window.location.hostname === "localhost"
-      ? "http://localhost:5000"
-      : "https://gitinsight-ewxj.onrender.com";
+  const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
   const handleSearch = async () => {
-
     if (!username.trim()) {
       alert("Enter GitHub username");
       return;
@@ -29,7 +25,6 @@ function UserAnalyzer() {
       );
 
       console.log("User Data:", res.data);
-
       setData(res.data);
 
     } catch (error) {
